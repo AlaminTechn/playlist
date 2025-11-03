@@ -12,6 +12,7 @@ import PlaylistHeader from '@/components/PlaylistHeader';
 export default function Home() {
   const [playlist, setPlaylist] = useState([]);
   const [currentPlayingId, setCurrentPlayingId] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -70,6 +71,7 @@ export default function Home() {
 
     ws.on('track.playing', (message) => {
       setCurrentPlayingId(message.id);
+      setIsPaused(false);
       setPlaylist(prev =>
         prev.map(item => ({
           ...item,
@@ -90,8 +92,12 @@ export default function Home() {
     );
   }
 
+  const isPlaying = Boolean(currentPlayingId) && !isPaused;
+
   return (
-    <div className="h-screen overflow-hidden flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="h-screen overflow-hidden flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative">
+      {/* Animated background wave */}
+      <div className={`wave-bg pointer-events-none ${isPlaying ? 'wave-running' : 'wave-paused'}`} />
       {/* Spotify-like Header */}
       <PlaylistHeader 
         title="Collaborative Playlist"
@@ -114,20 +120,20 @@ export default function Home() {
       {/* Header (kept small for status) */}
       <header className="bg-gray-800/40 backdrop-blur-sm border-b border-gray-700/60 shadow-lg animate-fade-in flex-none">
         <div className="max-w-[1400px] mx-auto px-3 py-3 flex items-center justify-between">
-          <div className="text-sm text-gray-300">Realtime collaborative playlist</div>
+          <div className="text-sm text-gray-300 opacity-90 shimmer-underline">Realtime collaborative playlist</div>
           <ConnectionStatus />
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 min-h-0 flex flex-wrap xl:flex-nowrap max-w-[1400px] mx-auto w-full px-3 py-3 gap-3">
+      <div className="min-h-0 flex flex-wrap xl:flex-nowrap max-w-[1600px] mx-auto w-full px-4 py-4 gap-4 relative z-10">
         {/* Track Library (30%) */}
-        <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-[30%]">
+        <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-[32%]">
           <TrackLibrary playlistTracks={playlist} onAddTrack={loadPlaylist} />
         </div>
 
         {/* Playlist (40%) */}
-        <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-[40%]">
+        <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-[44%]">
           <Playlist 
             playlist={playlist} 
             onUpdate={loadPlaylist}
@@ -136,7 +142,7 @@ export default function Home() {
         </div>
 
         {/* Playing From (30%) - compact header shown when a track is playing */}
-        <div className="h-full min-h-0 hidden xl:flex flex-col w-full xl:basis-[30%]">
+        <div className="h-full min-h-20 hidden xl:flex flex-col w-full xl:basis-[24%]">
           {(() => {
             const current = playlist.find(i => i.id === currentPlayingId);
             if (!current) return null;
@@ -159,8 +165,17 @@ export default function Home() {
       </div>
 
       {/* Bottom Now Playing bar (original) */}
-      <div className="flex-none">
-        <NowPlaying playlist={playlist} />
+      <div className="flex-none relative z-10">
+        <NowPlaying 
+          playlist={playlist}
+          onPlaybackStateChange={(state) => {
+            // state: { paused: boolean, hasTrack: boolean }
+            setIsPaused(state.paused || false);
+            if (!state.hasTrack) {
+              setIsPaused(false);
+            }
+          }}
+        />
       </div>
     </div>
   );
