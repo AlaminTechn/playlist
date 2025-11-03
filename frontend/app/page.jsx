@@ -120,23 +120,45 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 min-h-0 flex max-w-7xl mx-auto w-full px-4 py-4 gap-4">
-        {/* Track Library */}
-        <div className="w-1/3 h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col">
+      <div className="flex-1 min-h-0 flex flex-wrap xl:flex-nowrap max-w-7xl mx-auto w-full px-4 py-4 gap-4">
+        {/* Track Library (1) */}
+        <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-1/4">
           <TrackLibrary playlistTracks={playlist} onAddTrack={loadPlaylist} />
         </div>
 
-        {/* Playlist */}
-        <div className="w-2/3 h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col">
+        {/* Playlist (2) */}
+        <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-2/4">
           <Playlist 
             playlist={playlist} 
             onUpdate={loadPlaylist}
             currentPlayingId={currentPlayingId}
           />
         </div>
+
+        {/* Playing From (1) - compact header shown when a track is playing */}
+        <div className="h-full min-h-0 hidden xl:flex flex-col w-full xl:basis-1/4">
+          {(() => {
+            const current = playlist.find(i => i.id === currentPlayingId);
+            if (!current) return null;
+            const secs = playlist.reduce((s, i) => s + i.track.duration_seconds, 0);
+            const mins = Math.floor(secs / 60);
+            const rem = secs % 60;
+            return (
+              <PlaylistHeader
+                compact
+                title={current.track.title}
+                coverUrl={current.track.cover_url}
+                totalTracks={playlist.length}
+                totalDurationLabel={`${mins}:${String(rem).padStart(2,'0')}`}
+                followersLabel={current.track.artist}
+                onPlayAll={() => playlistApi.setPlaying(current.id)}
+              />
+            );
+          })()}
+        </div>
       </div>
 
-      {/* Now Playing Bar */}
+      {/* Bottom Now Playing bar (original) */}
       <div className="flex-none">
         <NowPlaying playlist={playlist} />
       </div>
