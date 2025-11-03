@@ -288,7 +288,7 @@ To test real-time synchronization:
 
 ### Screenshots
 
-![Main UI – Realtime Collaborative Playlist](frontend/public/screenshots/main-ui.png)
+![Main UI – Realtime Collaborative Playlist](frontend/public/screenshots/image.png)
 
 Place your screenshot file at `frontend/public/screenshots/main-ui.png` so it renders here and is also served by Next.js in the app at `/screenshots/main-ui.png`.
 
@@ -298,11 +298,14 @@ Place your screenshot file at `frontend/public/screenshots/main-ui.png` so it re
 - Now playing bar with progress
 
 ### Video Demo
-[Link to 1-2 minute video demonstrating:]
-- Adding/removing tracks
-- Reordering tracks
-- Voting system
-- Real-time synchronization
+
+<video src="frontend/public/screenshots/playlist_video.webm" controls style="max-width:100%; height:auto; border-radius:8px; outline:none;">
+  Your browser does not support the video tag. You can download/view it directly here:
+  <a href="frontend/public/screenshots/playlist_video.webm">playlist_video.webm</a>
+  
+</video>
+
+The video is also served by the app at `/screenshots/playlist_video.webm` when running locally.
 
 ## License
 
@@ -312,3 +315,8 @@ MIT License
 
 Built as a take-home assignment showcasing full-stack development skills.
 
+
+```
+Alamin Sarker.
+Email: alamin.sarker4241@gmail.com
+```
