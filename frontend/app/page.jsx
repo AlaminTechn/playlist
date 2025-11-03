@@ -12,6 +12,9 @@ export default function Home() {
   const [playlist, setPlaylist] = useState([]);
   const [currentPlayingId, setCurrentPlayingId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  
 
   useEffect(() => {
     loadPlaylist();
