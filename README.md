@@ -288,7 +288,9 @@ To test real-time synchronization:
 
 ### Screenshots
 
-![Main UI – Realtime Collaborative Playlist](docs/screenshots/main-ui.png)
+![Main UI – Realtime Collaborative Playlist](frontend/public/screenshots/main-ui.png)
+
+Place your screenshot file at `frontend/public/screenshots/main-ui.png` so it renders here and is also served by Next.js in the app at `/screenshots/main-ui.png`.
 
 - Main interface with track library and playlist
 - Drag-and-drop reordering
