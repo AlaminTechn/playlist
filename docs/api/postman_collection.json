@@ -1,0 +1,57 @@
+{
+  "info": {
+    "name": "Collaborative Playlist API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Local API collection for http://localhost:4000"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "http://localhost:4000/health" }
+    },
+    {
+      "name": "Tracks - All",
+      "request": { "method": "GET", "url": "http://localhost:4000/api/tracks" }
+    },
+    {
+      "name": "Playlist - List",
+      "request": { "method": "GET", "url": "http://localhost:4000/api/playlist" }
+    },
+    {
+      "name": "Playlist - Add",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"track_id\": \"<track-id>\",\n  \"added_by\": \"User\"\n}"
+        },
+        "url": "http://localhost:4000/api/playlist"
+      }
+    },
+    {
+      "name": "Playlist - Set Playing",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"is_playing\": true\n}" },
+        "url": "http://localhost:4000/api/playlist/{{item_id}}"
+      }
+    },
+    {
+      "name": "Playlist - Vote Up",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"direction\": \"up\"\n}" },
+        "url": "http://localhost:4000/api/playlist/{{item_id}}/vote"
+      }
+    },
+    {
+      "name": "Playlist - Delete",
+      "request": { "method": "DELETE", "url": "http://localhost:4000/api/playlist/{{item_id}}" }
+    }
+  ]
+}
+
+

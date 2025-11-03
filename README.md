@@ -145,6 +145,24 @@ cd backend
 npm test
 ```
 
+### API Tests (supertest)
+
+This repo includes API endpoint tests using `supertest` that exercise CRUD and playing/vote flows against the in-memory Express app:
+
+```bash
+cd backend
+npm test
+```
+
+### Manual API Testing
+
+- Postman/Thunder Client collection: `docs/api/postman_collection.json` (targets `http://localhost:4000`).
+- Curl smoke script:
+
+```bash
+bash docs/api/smoke.sh
+```
+
 Tests cover:
 - Position calculation algorithm
 - Database operations
