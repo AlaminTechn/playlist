@@ -94,6 +94,37 @@ npm run dev
 
 The frontend will run on `http://localhost:3000`
 
+### Default Ports and Endpoints
+
+| Service | URL |
+|---|---|
+| Web App | http://localhost:3000 |
+| API | http://localhost:4000 |
+| WebSocket | ws://localhost:4000 |
+
+Heartbeat messages are sent every 25s:
+
+```json
+{ "type": "ping", "ts": "<ISO timestamp>" }
+```
+
+### Environment Variables
+
+Backend (.env):
+
+```
+DATABASE_URL=file:./dev.db
+PORT=4000
+NODE_ENV=development
+```
+
+Frontend (.env.local):
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_WS_URL=ws://localhost:4000
+```
+
 ## Database Seeding
 
 The seed script creates:

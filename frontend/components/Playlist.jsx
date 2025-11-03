@@ -7,6 +7,7 @@ import { calculatePosition } from '@/lib/position';
 
 export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
   const [localPlaylist, setLocalPlaylist] = useState(playlist);
+  const [bumpingId, setBumpingId] = useState(null);
 
   useEffect(() => {
     setLocalPlaylist(playlist);
@@ -31,12 +32,16 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
 
   const handleVote = async (id, direction) => {
     try {
+      setBumpingId(id);
       await playlistApi.vote(id, direction);
       if (onUpdate) {
         onUpdate();
       }
     } catch (error) {
       console.error('Error voting:', error);
+    }
+    finally {
+      setTimeout(() => setBumpingId(null), 250);
     }
   };
 
@@ -95,6 +100,15 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
 
   const totalDuration = localPlaylist.reduce((sum, item) => sum + item.track.duration_seconds, 0);
 
+  // Auto-scroll current playing row into view
+  useEffect(() => {
+    if (!currentPlayingId) return;
+    const el = document.getElementById(`playlist-row-${currentPlayingId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [currentPlayingId]);
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="p-4 border-b border-gray-700">
@@ -143,6 +157,7 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
                             className={`grid grid-cols-[56px_minmax(0,4fr)_minmax(0,3fr)_120px_80px] gap-3 items-center px-3 py-2 rounded-md transition-all duration-200 hover:bg-gray-700/40 ${
                               isPlaying ? 'bg-primary-900/20' : 'bg-transparent'
                             } ${snapshot.isDragging ? 'opacity-70 scale-[1.01]' : ''}`}
+                            id={`playlist-row-${item.id}`}
                           >
                             {/* Row controls: play + drag handle/index */}
                             <div className="flex items-center gap-2 w-12">
@@ -186,7 +201,7 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
                                   <path d="M18 5h3a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-3V5Z"/>
                                 </svg>
                               </button>
-                              <div className={`w-8 text-center ${item.votes>0?'text-blue-400':item.votes<0?'text-red-400':'text-gray-400'}`}>{item.votes>0?'+':''}{item.votes}</div>
+                              <div className={`w-8 text-center ${bumpingId===item.id?'vote-bump':''} ${item.votes>0?'text-blue-400':item.votes<0?'text-red-400':'text-gray-400'}`}>{item.votes>0?'+':''}{item.votes}</div>
                               <button onClick={() => handleVote(item.id, 'up')} className="p-1 hover:text-blue-400 hover:scale-110 transition-transform" aria-label="Like">
                                 {/* Facebook-like thumbs up */}
                                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">

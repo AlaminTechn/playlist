@@ -176,6 +176,17 @@ body {
   50% { transform: scaleY(1.35); opacity: 1; }
 }
 
+/* Vote count bump */
+.vote-bump {
+  animation: vote-bump 250ms ease-in-out;
+}
+
+@keyframes vote-bump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
 /* Header title underline animation */
 .shimmer-underline {
   position: relative;
