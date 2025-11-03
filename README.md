@@ -287,7 +287,9 @@ To test real-time synchronization:
 ## Demo
 
 ### Screenshots
-[Add screenshots showing:]
+
+![Main UI – Realtime Collaborative Playlist](docs/screenshots/main-ui.png)
+
 - Main interface with track library and playlist
 - Drag-and-drop reordering
 - Real-time sync across windows
