@@ -64,10 +64,26 @@ export default function NowPlaying({ playlist }) {
     }
   };
 
+  const playPrevTrack = async () => {
+    if (!currentTrack) return;
+
+    const currentIndex = playlist.findIndex(item => item.id === currentTrack.id);
+    if (currentIndex === -1) return;
+
+    const prevIndex = currentIndex - 1;
+    if (prevIndex >= 0) {
+      const prevTrack = playlist[prevIndex];
+      try {
+        await playlistApi.setPlaying(prevTrack.id);
+      } catch (error) {
+        console.error('Error playing previous track:', error);
+      }
+    }
+  };
+
   const handleTogglePause = () => {
     setIsPaused(!isPaused);
     if (!isPaused) {
-      // Adjust start time to account for elapsed time
       const remainingTime = currentTrack.track.duration_seconds - elapsedTime;
       setPlayStartTime(Date.now() - (currentTrack.track.duration_seconds - remainingTime) * 1000);
     }
@@ -85,83 +101,86 @@ export default function NowPlaying({ playlist }) {
 
   if (!currentTrack) {
     return (
-      <div className="border-t border-gray-700 bg-gray-800/80 backdrop-blur-sm p-4">
-        <div className="text-center text-gray-400 animate-pulse">
+      <div className="border-t border-gray-800 bg-gray-900/90">
+        <div className="max-w-[1400px] mx-auto px-4 py-3 text-center text-gray-400">
           No track is currently playing
         </div>
       </div>
     );
   }
 
+  const total = currentTrack.track.duration_seconds;
+
   return (
-    <div className="border-t border-gray-700 bg-gradient-to-r from-gray-800 via-gray-800/95 to-gray-800 shadow-2xl backdrop-blur-sm">
-      <div className="p-4">
-        <div className="flex items-center gap-4">
-          {/* Album Art / Placeholder */}
-          <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center">
+    <div className="border-t border-gray-800 bg-gray-900/95">
+      <div className="max-w-[1400px] mx-auto px-4 py-2 grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,1fr)] items-center gap-4">
+        {/* Left: track summary */}
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-700 flex-shrink-0">
             {currentTrack.track.cover_url ? (
-              <img
-                src={currentTrack.track.cover_url}
-                alt={currentTrack.track.title}
-                className="w-full h-full object-cover rounded-lg"
-              />
+              <img src={currentTrack.track.cover_url} alt={currentTrack.track.title} className="w-full h-full object-cover" />
             ) : (
-              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-              </svg>
-            )}
+              <div className="w-full h-full bg-gradient-to-br from-primary-500 to-primary-700" />)
+            }
           </div>
-
-          {/* Track Info */}
-          <div className="flex-1 min-w-0">
-            <div className="font-medium truncate text-white">{currentTrack.track.title}</div>
-            <div className="text-sm text-gray-300 truncate">
-              {currentTrack.track.artist}
-            </div>
+          <div className="min-w-0">
+            <div className="truncate text-sm text-white">{currentTrack.track.title}</div>
+            <div className="truncate text-xs text-gray-400">{currentTrack.track.artist}</div>
           </div>
+          <span className="ml-1 text-green-500">●</span>
+        </div>
 
-          {/* Controls */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleTogglePause}
-              className="p-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full hover:from-primary-600 hover:to-primary-700 transition-all duration-200 hover:scale-110 active:scale-95 shadow-lg hover:shadow-primary-500/50"
-              aria-label={isPaused ? 'Play' : 'Pause'}
-            >
+        {/* Center: controls + progress */}
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-4">
+            {/* Shuffle (visual only) */}
+            <button className="p-2 text-gray-400 hover:text-white">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4l5 5m0 0l5-5m-5 5L9 9m6 6l5 5m0 0l-5-5m5 5l-1-1M4 20l5-5"/></svg>
+            </button>
+            {/* Previous */}
+            <button onClick={playPrevTrack} className="p-2 text-gray-300 hover:text-white">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 5h2v14H6z"/><path d="M20 6v12l-8.5-6L20 6z"/></svg>
+            </button>
+            {/* Play/Pause circle */}
+            <button onClick={handleTogglePause} className="p-2 rounded-full bg-white text-gray-900 hover:scale-105 active:scale-95 transition-transform">
               {isPaused ? (
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
               ) : (
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                </svg>
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
               )}
             </button>
-            <button
-              onClick={handleSkip}
-              className="p-3 text-gray-400 hover:text-white rounded-full hover:bg-gray-700/50 transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Skip"
-              disabled={playlist.findIndex(item => item.id === currentTrack.id) === playlist.length - 1}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+            {/* Next */}
+            <button onClick={handleSkip} className="p-2 text-gray-300 hover:text-white">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 5h2v14h-2z"/><path d="M4 6l8.5 6L4 18V6z"/></svg>
             </button>
+            {/* Queue (visual only) */}
+            <button className="p-2 text-gray-400 hover:text-white">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h7"/></svg>
+            </button>
+          </div>
+
+          {/* Progress */}
+          <div className="mt-2 w-full flex items-center gap-2 text-[11px] text-gray-400">
+            <span className="w-10 text-right">{formatTime(elapsedTime)}</span>
+            <div className="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
+              <div className="h-full bg-white" style={{ width: `${progress * 100}%` }} />
+            </div>
+            <span className="w-10">{formatTime(total)}</span>
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mt-4">
-          <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
-            <span>{formatTime(elapsedTime)}</span>
-            <span>{formatTime(currentTrack.track.duration_seconds)}</span>
+        {/* Right: extra controls (visual) */}
+        <div className="flex items-center justify-end gap-3 text-gray-300">
+          <button className="p-2 hover:text-white" title="Lyrics">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </button>
+          <div className="flex items-center gap-2 w-28">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3z"/></svg>
+            <div className="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden"><div className="h-full bg-gray-300 w-3/5"/></div>
           </div>
-          <div className="w-full bg-gray-700/50 rounded-full h-2 overflow-hidden shadow-inner">
-            <div
-              className="bg-gradient-to-r from-primary-500 to-primary-600 h-full transition-all duration-100 shadow-lg shadow-primary-500/50"
-              style={{ width: `${progress * 100}%` }}
-            />
-          </div>
+          <button className="p-2 hover:text-white" title="Fullscreen">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 3H5a2 2 0 00-2 2v3m0 6v3a2 2 0 002 2h3m8-16h3a2 2 0 012 2v3m0 6v3a2 2 0 01-2 2h-3"/></svg>
+          </button>
         </div>
       </div>
     </div>

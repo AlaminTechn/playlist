@@ -113,21 +113,21 @@ export default function Home() {
 
       {/* Header (kept small for status) */}
       <header className="bg-gray-800/40 backdrop-blur-sm border-b border-gray-700/60 shadow-lg animate-fade-in flex-none">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-3 py-3 flex items-center justify-between">
           <div className="text-sm text-gray-300">Realtime collaborative playlist</div>
           <ConnectionStatus />
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 min-h-0 flex flex-wrap xl:flex-nowrap max-w-7xl mx-auto w-full px-4 py-4 gap-4">
-        {/* Track Library (1) */}
-        <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-1/4">
+      <div className="flex-1 min-h-0 flex flex-wrap xl:flex-nowrap max-w-[1400px] mx-auto w-full px-3 py-3 gap-3">
+        {/* Track Library (30%) */}
+        <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-[30%]">
           <TrackLibrary playlistTracks={playlist} onAddTrack={loadPlaylist} />
         </div>
 
-        {/* Playlist (2) */}
-        <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-2/4">
+        {/* Playlist (40%) */}
+        <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-[40%]">
           <Playlist 
             playlist={playlist} 
             onUpdate={loadPlaylist}
@@ -135,8 +135,8 @@ export default function Home() {
           />
         </div>
 
-        {/* Playing From (1) - compact header shown when a track is playing */}
-        <div className="h-full min-h-0 hidden xl:flex flex-col w-full xl:basis-1/4">
+        {/* Playing From (30%) - compact header shown when a track is playing */}
+        <div className="h-full min-h-0 hidden xl:flex flex-col w-full xl:basis-[30%]">
           {(() => {
             const current = playlist.find(i => i.id === currentPlayingId);
             if (!current) return null;
