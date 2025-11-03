@@ -85,8 +85,8 @@ export default function NowPlaying({ playlist }) {
 
   if (!currentTrack) {
     return (
-      <div className="border-t bg-gray-50 dark:bg-gray-900 p-4">
-        <div className="text-center text-gray-500">
+      <div className="border-t border-gray-700 bg-gray-800/80 backdrop-blur-sm p-4">
+        <div className="text-center text-gray-400 animate-pulse">
           No track is currently playing
         </div>
       </div>
@@ -94,7 +94,7 @@ export default function NowPlaying({ playlist }) {
   }
 
   return (
-    <div className="border-t bg-white dark:bg-gray-800 shadow-lg">
+    <div className="border-t border-gray-700 bg-gradient-to-r from-gray-800 via-gray-800/95 to-gray-800 shadow-2xl backdrop-blur-sm">
       <div className="p-4">
         <div className="flex items-center gap-4">
           {/* Album Art / Placeholder */}
@@ -114,8 +114,8 @@ export default function NowPlaying({ playlist }) {
 
           {/* Track Info */}
           <div className="flex-1 min-w-0">
-            <div className="font-medium truncate">{currentTrack.track.title}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
+            <div className="font-medium truncate text-white">{currentTrack.track.title}</div>
+            <div className="text-sm text-gray-300 truncate">
               {currentTrack.track.artist}
             </div>
           </div>
@@ -124,7 +124,7 @@ export default function NowPlaying({ playlist }) {
           <div className="flex items-center gap-2">
             <button
               onClick={handleTogglePause}
-              className="p-3 bg-primary-500 text-white rounded-full hover:bg-primary-600 transition-colors"
+              className="p-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full hover:from-primary-600 hover:to-primary-700 transition-all duration-200 hover:scale-110 active:scale-95 shadow-lg hover:shadow-primary-500/50"
               aria-label={isPaused ? 'Play' : 'Pause'}
             >
               {isPaused ? (
@@ -139,7 +139,7 @@ export default function NowPlaying({ playlist }) {
             </button>
             <button
               onClick={handleSkip}
-              className="p-3 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-3 text-gray-400 hover:text-white rounded-full hover:bg-gray-700/50 transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Skip"
               disabled={playlist.findIndex(item => item.id === currentTrack.id) === playlist.length - 1}
             >
@@ -152,13 +152,13 @@ export default function NowPlaying({ playlist }) {
 
         {/* Progress Bar */}
         <div className="mt-4">
-          <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+          <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
             <span>{formatTime(elapsedTime)}</span>
             <span>{formatTime(currentTrack.track.duration_seconds)}</span>
           </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-gray-700/50 rounded-full h-2 overflow-hidden shadow-inner">
             <div
-              className="bg-primary-500 h-full transition-all duration-100"
+              className="bg-gradient-to-r from-primary-500 to-primary-600 h-full transition-all duration-100 shadow-lg shadow-primary-500/50"
               style={{ width: `${progress * 100}%` }}
             />
           </div>

@@ -97,10 +97,10 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b">
+      <div className="p-4 border-b border-gray-700">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">Playlist</h2>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <h2 className="text-xl font-bold text-white">Playlist</h2>
+          <div className="text-sm text-gray-300">
             {localPlaylist.length} tracks • {formatDuration(totalDuration)}
           </div>
         </div>
@@ -112,12 +112,12 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
             <div
               {...provided.droppableProps}
               ref={provided.innerRef}
-              className={`flex-1 overflow-y-auto p-4 ${
-                snapshot.isDraggingOver ? 'bg-gray-50 dark:bg-gray-900' : ''
+              className={`flex-1 overflow-y-auto p-4 transition-colors duration-200 ${
+                snapshot.isDraggingOver ? 'bg-gray-800/40' : ''
               }`}
             >
               {localPlaylist.length === 0 ? (
-                <div className="text-center text-gray-500 py-8">
+                <div className="text-center text-gray-400 py-8 animate-pulse">
                   Playlist is empty. Add some tracks!
                 </div>
               ) : (
@@ -131,20 +131,21 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            className={`group flex items-center gap-3 p-3 border rounded-lg bg-white dark:bg-gray-800 hover:shadow-md transition-all ${
+                            className={`group flex items-center gap-3 p-3 border rounded-lg bg-gray-700/30 backdrop-blur-sm hover:shadow-xl transition-all duration-300 animate-slide-up ${
                               isPlaying
-                                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                                : 'hover:border-gray-300'
+                                ? 'border-primary-500 bg-gradient-to-r from-primary-900/30 to-primary-800/20 shadow-primary-500/20'
+                                : 'border-gray-600/50 hover:border-gray-500 hover:bg-gray-700/50'
                             } ${
                               snapshot.isDragging
-                                ? 'opacity-50 shadow-lg scale-105'
-                                : ''
+                                ? 'opacity-50 shadow-2xl scale-105 rotate-1'
+                                : 'hover:scale-[1.01]'
                             }`}
+                            style={{ animationDelay: `${index * 30}ms` }}
                           >
                             {/* Drag Handle */}
                             <div
                               {...provided.dragHandleProps}
-                              className="flex-shrink-0 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing"
+                              className="flex-shrink-0 text-gray-400 hover:text-primary-400 cursor-grab active:cursor-grabbing transition-colors hover:scale-110"
                             >
                               <svg
                                 className="w-5 h-5"
@@ -169,20 +170,22 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
                             {/* Track Info */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <div className={`font-medium truncate ${isPlaying ? 'text-primary-700 dark:text-primary-300' : ''}`}>
+                                <div className={`font-medium truncate transition-colors ${
+                                  isPlaying ? 'text-primary-300' : 'text-white'
+                                }`}>
                                   {item.track.title}
                                 </div>
                                 {isPlaying && (
-                                  <span className="text-xs bg-primary-500 text-white px-2 py-0.5 rounded-full">
+                                  <span className="text-xs bg-gradient-to-r from-primary-500 to-primary-600 text-white px-2 py-0.5 rounded-full animate-pulse shadow-lg">
                                     Now Playing
                                   </span>
                                 )}
                               </div>
-                              <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                              <div className="text-sm text-gray-300 truncate">
                                 {item.track.artist}
                                 {item.track.album && ` • ${item.track.album}`}
                               </div>
-                              <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                              <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
                                 <span>{formatDuration(item.track.duration_seconds)}</span>
                                 <span>•</span>
                                 <span>Added by {item.added_by}</span>
@@ -193,25 +196,25 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => handleVote(item.id, 'down')}
-                                className="p-1 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                                className="p-1 text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded transition-all duration-200 hover:scale-110 active:scale-95"
                                 aria-label="Downvote"
                               >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                               </button>
-                              <div className={`min-w-[2rem] text-center font-medium ${
+                              <div className={`min-w-[2rem] text-center font-medium transition-colors ${
                                 item.votes > 0
-                                  ? 'text-green-600 dark:text-green-400'
+                                  ? 'text-green-400'
                                   : item.votes < 0
-                                  ? 'text-red-600 dark:text-red-400'
-                                  : 'text-gray-500'
+                                  ? 'text-red-400'
+                                  : 'text-gray-400'
                               }`}>
                                 {item.votes > 0 ? '+' : ''}{item.votes}
                               </div>
                               <button
                                 onClick={() => handleVote(item.id, 'up')}
-                                className="p-1 text-gray-500 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
+                                className="p-1 text-gray-400 hover:text-green-400 hover:bg-green-900/20 rounded transition-all duration-200 hover:scale-110 active:scale-95"
                                 aria-label="Upvote"
                               >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,7 +228,7 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
                               {!isPlaying && (
                                 <button
                                   onClick={() => handleSetPlaying(item.id)}
-                                  className="p-2 text-gray-500 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded transition-colors"
+                                  className="p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-900/20 rounded transition-all duration-200 hover:scale-110 active:scale-95"
                                   aria-label="Play"
                                 >
                                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -235,7 +238,7 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
                               )}
                               <button
                                 onClick={() => handleRemove(item.id)}
-                                className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors opacity-0 group-hover:opacity-100"
+                                className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95"
                                 aria-label="Remove"
                               >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

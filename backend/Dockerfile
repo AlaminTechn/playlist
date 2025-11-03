@@ -13,7 +13,6 @@ COPY prisma ./prisma/
 RUN npm ci
 
 # Generate Prisma client with Alpine Linux binary targets
-ENV PRISMA_CLI_BINARY_TARGETS="native,linux-musl-openssl-3.0.x"
 RUN npx prisma generate
 
 # Copy application code
@@ -25,20 +24,6 @@ RUN mkdir -p /app/data && chmod 755 /app/data
 # Expose port
 EXPOSE 4000
 
-# Create a startup script
-RUN echo '#!/bin/sh\n\
-set -e\n\
-echo "Setting up database..."\n\
-npx prisma db push --skip-generate --accept-data-loss || echo "Database push completed"\n\
-if [ ! -f /app/data/dev.db ] || [ ! -s /app/data/dev.db ]; then\n\
-  echo "Seeding database..."\n\
-  npm run db:seed\n\
-else\n\
-  echo "Database exists, skipping seed"\n\
-fi\n\
-echo "Starting server..."\n\
-npm start' > /app/start.sh && chmod +x /app/start.sh
-
-# Start script
-CMD ["/app/start.sh"]
+# Start script - use sh -c instead of creating a separate script file
+CMD ["sh", "-c", "echo 'Setting up database...' && npx prisma db push --skip-generate --accept-data-loss || echo 'Database push completed' && if [ ! -f /app/data/dev.db ] || [ ! -s /app/data/dev.db ]; then echo 'Seeding database...' && npm run db:seed; else echo 'Database exists, skipping seed'; fi && echo 'Starting server...' && npm start"]
 

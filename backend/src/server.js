@@ -21,6 +21,21 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Root route - redirect to frontend or show API info
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Collaborative Playlist API',
+    version: '1.0.0',
+    endpoints: {
+      tracks: '/api/tracks',
+      playlist: '/api/playlist',
+      health: '/health',
+      websocket: 'ws://localhost:4000'
+    },
+    frontend: 'http://localhost:3000'
+  });
+});
+
 // API Routes
 app.use('/api/tracks', tracksRouter);
 app.use('/api/playlist', playlistRouter);

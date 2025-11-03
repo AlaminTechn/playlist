@@ -77,26 +77,26 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="text-center">
-          <div className="text-xl font-medium mb-2">Loading playlist...</div>
-          <div className="text-gray-500">Please wait</div>
+          <div className="text-xl font-medium mb-2 text-white animate-pulse">Loading playlist...</div>
+          <div className="text-gray-400">Please wait</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b shadow-sm">
+      <header className="bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 shadow-lg animate-fade-in">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl font-bold text-white animate-slide-up">
                 🎵 Collaborative Playlist
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-300 mt-1">
                 Real-time collaborative playlist manager
               </p>
             </div>
@@ -108,12 +108,12 @@ export default function Home() {
       {/* Main Content */}
       <div className="flex-1 flex max-w-7xl mx-auto w-full px-4 py-4 gap-4">
         {/* Track Library */}
-        <div className="w-1/3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="w-1/3 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01]">
           <TrackLibrary playlistTracks={playlist} onAddTrack={loadPlaylist} />
         </div>
 
         {/* Playlist */}
-        <div className="w-2/3 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="w-2/3 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01]">
           <Playlist 
             playlist={playlist} 
             onUpdate={loadPlaylist}

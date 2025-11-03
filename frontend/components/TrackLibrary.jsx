@@ -73,28 +73,28 @@ export default function TrackLibrary({ playlistTracks, onAddTrack }) {
   if (loading) {
     return (
       <div className="p-4">
-        <div className="text-center text-gray-500">Loading tracks...</div>
+        <div className="text-center text-gray-400 animate-pulse">Loading tracks...</div>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b space-y-3">
-        <h2 className="text-xl font-bold">Track Library</h2>
+      <div className="p-4 border-b border-gray-700 space-y-3">
+        <h2 className="text-xl font-bold text-white">Track Library</h2>
         
         <input
           type="text"
           placeholder="Search tracks..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
         />
         
         <select
           value={selectedGenre}
           onChange={(e) => setSelectedGenre(e.target.value)}
-          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
         >
           {genres.map(genre => (
             <option key={genre} value={genre}>
@@ -107,24 +107,25 @@ export default function TrackLibrary({ playlistTracks, onAddTrack }) {
       <div className="flex-1 overflow-y-auto p-4">
         <div className="space-y-2">
           {filteredTracks.length === 0 ? (
-            <div className="text-center text-gray-500 py-8">
+            <div className="text-center text-gray-400 py-8">
               No tracks found
             </div>
           ) : (
-            filteredTracks.map(track => {
+            filteredTracks.map((track, index) => {
               const isInPlaylist = playlistTrackIds.has(track.id);
               
               return (
                 <div
                   key={track.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors animate-slide-up"
+                  className="flex items-center justify-between p-3 bg-gray-700/30 border border-gray-600/50 rounded-lg hover:bg-gray-700/50 hover:border-gray-500 hover:shadow-lg transition-all duration-300 animate-slide-up hover:scale-[1.02] backdrop-blur-sm"
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{track.title}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                    <div className="font-medium truncate text-white">{track.title}</div>
+                    <div className="text-sm text-gray-300 truncate">
                       {track.artist} {track.album && `• ${track.album}`}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-gray-400 mt-1">
                       {formatDuration(track.duration_seconds)}
                       {track.genre && ` • ${track.genre}`}
                     </div>
@@ -133,10 +134,10 @@ export default function TrackLibrary({ playlistTracks, onAddTrack }) {
                   <button
                     onClick={() => handleAddTrack(track.id)}
                     disabled={isInPlaylist}
-                    className={`ml-4 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    className={`ml-4 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                       isInPlaylist
-                        ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
-                        : 'bg-primary-500 text-white hover:bg-primary-600 active:scale-95'
+                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 active:scale-95 shadow-lg hover:shadow-primary-500/50'
                     }`}
                   >
                     {isInPlaylist ? 'Added' : 'Add'}
