@@ -351,6 +351,13 @@ Place your screenshot file at `frontend/public/screenshots/main-ui.png` so it re
 - Real-time sync across windows
 - Now playing bar with progress
 
+#### Playlist & Track List API JSON Response 
+
+![Playlist ITEMS – Playlist List](frontend/public/screenshots/playlist_items.png)
+
+
+![TRACK ITEMS – Track List](frontend/public/screenshots/tracks_items.png)
+
 ### Video Demo
 
 <video src="frontend/public/screenshots/playlist_video.webm" controls style="max-width:100%; height:auto; border-radius:8px; outline:none;">
