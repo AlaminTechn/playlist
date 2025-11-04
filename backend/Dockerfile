@@ -10,7 +10,9 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install dependencies
-RUN npm ci
+# RUN npm ci
+
+RUN npm install
 
 # Generate Prisma client with Alpine Linux binary targets
 RUN npx prisma generate
