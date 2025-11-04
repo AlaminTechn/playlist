@@ -6,7 +6,7 @@ A real-time collaborative playlist application where multiple users can add, rem
 
 - ✅ **Real-time Synchronization**: WebSocket-based updates visible within ~1 second
 - ✅ **Drag-and-Drop Reordering**: Smooth reordering with position algorithm
-- ✅ **Voting System**: Upvote/downvote tracks with real-time updates
+- ✅ **Voting System**: Upvote/downvote tracks with real-time updates and auto-sorting by vote count
 - ✅ **Now Playing**: Simulated playback with progress bar and auto-advance
 - ✅ **Track Library**: Searchable library with genre filtering
 - ✅ **Connection Status**: Visual indicator for WebSocket connection
@@ -38,7 +38,7 @@ A real-time collaborative playlist application where multiple users can add, rem
 **Fully automated setup** - No manual steps required! Database migrations and seeding happen automatically on first startup.
 
 ```bash
-# Clone the repository
+# Clone repository
 git clone <repository-url>
 cd playlist
 
@@ -191,7 +191,7 @@ From the repository root you can run:
 # Run backend tests
 npm run test:backend
 
-# Setup database (generate client, migrate, seed)
+# Setup the database (generate client, migrate, seed)
 npm run db:setup
 
 # Seed only / migrate only
@@ -208,15 +208,15 @@ Tests cover:
 ## API Endpoints
 
 ### Tracks
-- `GET /api/tracks` - Get all tracks in library
+- `GET /api/tracks` - Get all tracks in the library
 - `GET /api/tracks/:id` - Get a specific track
 
 ### Playlist
-- `GET /api/playlist` - Get current playlist (ordered by position)
-- `POST /api/playlist` - Add track to playlist
-- `PATCH /api/playlist/:id` - Update playlist item (position, is_playing)
+- `GET /api/playlist` - Get the current playlist (ordered by position)
+- `POST /api/playlist` - Add a track to the playlist
+- `PATCH /api/playlist/:id` - Update a playlist item (position, is_playing)
 - `POST /api/playlist/:id/vote` - Vote on a track (up/down)
-- `DELETE /api/playlist/:id` - Remove track from playlist
+- `DELETE /api/playlist/:id` - Remove a track from the playlist
 
 ### WebSocket Events
 
@@ -341,9 +341,17 @@ To test real-time synchronization:
 
 ### Video Demo
 
-[![Project's Intro Video](frontend/public/screenshots/image.png)](https://youtu.be/0euVuo_5s1Y)
+**Complete Demo Walkthrough**: [https://youtu.be/8xRwBAj1tJU](https://youtu.be/8xRwBAj1tJU)
 
-The video is also served by the app at `/screenshots/playlist_video.webm` when running locally.
+[![Playlist Demo Video](frontend/public/screenshots/image.png)](/screenshots/Playlist_Demo_Video.webm)
+
+**Complete Demo Walkthrough with Vote Sorting**: [https://youtu.be/8xRwBAj1tJU](https://youtu.be/8xRwBAj1tJU)
+
+The videos are also served by the app at:
+- `/screenshots/Playlist_Demo_Video.webm` - Complete demo walkthrough with vote sorting feature
+- `/screenshots/playlist_video.webm` - Original intro video
+
+Both videos are available when running locally.
 
 ### Screenshots
 
