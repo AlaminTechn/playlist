@@ -1,20 +1,29 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useNotifications } from '@/contexts/NotificationContext';
+import NotificationModal from './NotificationModal';
 
 export default function PlaylistHeader({ title = 'Collaborative Playlist', coverUrl, totalTracks = 0, totalDurationLabel = '0:00', followersLabel = 'Public', onPlayAll, compact = false }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const menuRef = useRef(null);
+  const { notifications, unreadCount, markAsRead, clearAll } = useNotifications();
 
   useEffect(() => {
     function onKey(e) {
-      if (e.key === 'Escape') setIsUserMenuOpen(false);
+      if (e.key === 'Escape') {
+        setIsUserMenuOpen(false);
+        setIsNotificationModalOpen(false);
+      }
     }
     function onClick(e) {
       if (!menuRef.current) return;
-      if (!menuRef.current.contains(e.target)) setIsUserMenuOpen(false);
+      if (!menuRef.current.contains(e.target)) {
+        setIsUserMenuOpen(false);
+      }
     }
-    if (isUserMenuOpen) {
+    if (isUserMenuOpen || isNotificationModalOpen) {
       document.addEventListener('keydown', onKey);
       document.addEventListener('mousedown', onClick);
     }
@@ -22,7 +31,15 @@ export default function PlaylistHeader({ title = 'Collaborative Playlist', cover
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('mousedown', onClick);
     };
-  }, [isUserMenuOpen]);
+  }, [isUserMenuOpen, isNotificationModalOpen]);
+
+  const markAllAsRead = () => {
+    notifications.forEach(notif => {
+      if (!notif.read) {
+        markAsRead(notif.id);
+      }
+    });
+  };
 
   if (compact) {
     return (
@@ -94,8 +111,25 @@ export default function PlaylistHeader({ title = 'Collaborative Playlist', cover
         {/* User actions */}
         <div className="flex items-center gap-2 relative" ref={menuRef}>
           <button className="px-3 py-1.5 rounded-full border border-gray-700 text-gray-200 hover:bg-gray-800/80">Explore Premium</button>
-          <button className="p-2 rounded-full bg-gray-800 text-gray-200 hover:text-white hover:bg-gray-700" title="Notifications">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          
+          {/* Notifications button */}
+          <button 
+            onClick={() => setIsNotificationModalOpen(true)} 
+            className="p-2 rounded-full bg-gray-800 text-gray-200 hover:text-white hover:bg-gray-700 relative transition-colors" 
+            title="Notifications"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </button>
+          
+          <button className="p-2 rounded-full bg-gray-800 text-gray-200 hover:text-white hover:bg-gray-700" title="Account">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0V1a3 3 0 11-6 0v-1m6 0H9"/></svg>
           </button>
           <button onClick={() => setIsUserMenuOpen(v => !v)} className="p-1.5 rounded-full bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-primary-500" title="Account" aria-haspopup="menu" aria-expanded={isUserMenuOpen}>
             <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-primary-600 text-white font-semibold">U</span>
@@ -117,6 +151,12 @@ export default function PlaylistHeader({ title = 'Collaborative Playlist', cover
           )}
         </div>
       </div>
+
+      {/* Notification Modal */}
+      <NotificationModal 
+        isOpen={isNotificationModalOpen} 
+        onClose={() => setIsNotificationModalOpen(false)} 
+      />
     </div>
   );
 }

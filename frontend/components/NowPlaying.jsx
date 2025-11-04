@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { playlistApi } from '@/lib/api';
 
 export default function NowPlaying({ playlist, onPlaybackStateChange }) {
@@ -11,6 +11,9 @@ export default function NowPlaying({ playlist, onPlaybackStateChange }) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [volume, setVolume] = useState(0.6); // 0..1 (UI only)
   const [isMuted, setIsMuted] = useState(false);
+  const [isSeeking, setIsSeeking] = useState(false);
+  const [seekProgress, setSeekProgress] = useState(null);
+  const progressBarRef = useRef(null);
 
   useEffect(() => {
     const playing = playlist.find(item => item.is_playing);
@@ -34,7 +37,7 @@ export default function NowPlaying({ playlist, onPlaybackStateChange }) {
   }, [playlist]);
 
   useEffect(() => {
-    if (!currentTrack || isPaused) return;
+    if (!currentTrack || isPaused || isSeeking) return;
     const interval = setInterval(() => {
       const elapsed = (Date.now() - playStartTime) / 1000;
       const totalDuration = currentTrack.track.duration_seconds;
@@ -46,7 +49,7 @@ export default function NowPlaying({ playlist, onPlaybackStateChange }) {
       }
     }, 100);
     return () => clearInterval(interval);
-  }, [currentTrack, isPaused, playStartTime]);
+  }, [currentTrack, isPaused, playStartTime, isSeeking]);
 
   const playNextTrack = async () => {
     if (!currentTrack) return;
@@ -84,6 +87,79 @@ export default function NowPlaying({ playlist, onPlaybackStateChange }) {
 
   const handleSkip = () => { playNextTrack(); };
 
+  const handleProgressClick = (e) => {
+    if (!currentTrack || !progressBarRef.current) return;
+    
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const progressBarWidth = rect.width;
+    const clickProgress = Math.max(0, Math.min(1, clickX / progressBarWidth));
+    
+    seekToPosition(clickProgress);
+  };
+
+  const handleProgressMouseDown = (e) => {
+    e.preventDefault();
+    setIsSeeking(true);
+    updateSeekPosition(e);
+    
+    const handleMouseMove = (e) => {
+      updateSeekPosition(e);
+    };
+    
+    const handleMouseUp = () => {
+      if (seekProgress !== null) {
+        seekToPosition(seekProgress);
+      }
+      setIsSeeking(false);
+      setSeekProgress(null);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleProgressWheel = (e) => {
+    e.preventDefault();
+    if (!currentTrack) return;
+    
+    const scrollDelta = e.deltaY > 0 ? -0.05 : 0.05; // Scroll down = backward, up = forward
+    const currentProgress = isSeeking ? (seekProgress || progress) : progress;
+    const newProgress = Math.max(0, Math.min(1, currentProgress + scrollDelta));
+    
+    if (isSeeking) {
+      setSeekProgress(newProgress);
+    } else {
+      seekToPosition(newProgress);
+    }
+  };
+
+  const updateSeekPosition = (e) => {
+    if (!progressBarRef.current) return;
+    
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const progressBarWidth = rect.width;
+    const newSeekProgress = Math.max(0, Math.min(1, mouseX / progressBarWidth));
+    
+    setSeekProgress(newSeekProgress);
+  };
+
+  const seekToPosition = (newProgress) => {
+    if (!currentTrack) return;
+    
+    const totalDuration = currentTrack.track.duration_seconds;
+    const newElapsedTime = newProgress * totalDuration;
+    
+    setProgress(newProgress);
+    setElapsedTime(newElapsedTime);
+    setPlayStartTime(Date.now() - newElapsedTime * 1000);
+    setSeekProgress(null);
+    setIsSeeking(false);
+  };
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -91,6 +167,10 @@ export default function NowPlaying({ playlist, onPlaybackStateChange }) {
   };
 
   const effectiveVolume = isMuted ? 0 : volume;
+  const displayProgress = isSeeking && seekProgress !== null ? seekProgress : progress;
+  const displayElapsedTime = isSeeking && seekProgress !== null 
+    ? seekProgress * currentTrack.track.duration_seconds 
+    : elapsedTime;
 
   if (!currentTrack) {
     return (
@@ -111,10 +191,18 @@ export default function NowPlaying({ playlist, onPlaybackStateChange }) {
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-700 flex-shrink-0">
             {currentTrack.track.cover_url ? (
-              <img src={currentTrack.track.cover_url} alt={currentTrack.track.title} className="w-full h-full object-cover" />
+              <img 
+                src={currentTrack.track.cover_url} 
+                alt={currentTrack.track.title} 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback to placeholder if image fails to load
+                  e.target.src = `https://picsum.photos/seed/${currentTrack.track.title}/48/48.jpg`;
+                }}
+              />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-primary-500 to-primary-700" />)
-            }
+              <div className="w-full h-full bg-gradient-to-br from-primary-500 to-primary-700" />
+            )}
           </div>
           <div className="min-w-0">
             <div className="truncate text-sm text-white">{currentTrack.track.title}</div>
@@ -148,9 +236,28 @@ export default function NowPlaying({ playlist, onPlaybackStateChange }) {
           </div>
 
           <div className="mt-2 w-full flex items-center gap-2 text-[11px] text-gray-400">
-            <span className="w-10 text-right">{formatTime(elapsedTime)}</span>
-            <div className="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
-              <div className="h-full bg-white" style={{ width: `${progress * 100}%` }} />
+            <span className="w-10 text-right">{formatTime(displayElapsedTime)}</span>
+            <div 
+              ref={progressBarRef}
+              className="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden cursor-pointer group relative"
+              onClick={handleProgressClick}
+              onMouseDown={handleProgressMouseDown}
+              onWheel={handleProgressWheel}
+            >
+              <div 
+                className={`h-full transition-all ${isSeeking ? 'bg-blue-400' : 'bg-white group-hover:bg-gray-200'}`} 
+                style={{ width: `${displayProgress * 100}%` }} 
+              />
+              {isSeeking && (
+                <div 
+                  className="absolute top-1/2 transform -translate-y-1/2 w-3 h-3 bg-blue-400 rounded-full shadow-lg border border-white"
+                  style={{ left: `${displayProgress * 100}%`, marginLeft: '-6px' }}
+                />
+              )}
+              {/* Hover indicator */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="h-full bg-white/20 pointer-events-none" />
+              </div>
             </div>
             <span className="w-10">{formatTime(total)}</span>
           </div>
@@ -194,9 +301,8 @@ export default function NowPlaying({ playlist, onPlaybackStateChange }) {
         </div>
       </div>
       <div className="max-w-[1400px] mx-auto px-4 pb-2 text-[11px] text-gray-500">
-        Note: Playback is simulated for this demo – no real audio output.
+        Note: Playback is simulated for this demo – no real audio output. Scroll or click on the progress bar to seek.
       </div>
     </div>
   );
 }
-

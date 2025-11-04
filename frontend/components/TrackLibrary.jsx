@@ -117,9 +117,30 @@ export default function TrackLibrary({ playlistTracks, onAddTrack }) {
               return (
                 <div
                   key={track.id}
-                  className="flex items-center justify-between p-3 bg-gray-700/30 border border-gray-600/50 rounded-lg hover:bg-gray-700/50 hover:border-gray-500 hover:shadow-lg transition-all duration-300 backdrop-blur-sm hover:scale-[1.02]"
+                  className="flex items-center gap-3 p-3 bg-gray-700/30 border border-gray-600/50 rounded-lg hover:bg-gray-700/50 hover:border-gray-500 hover:shadow-lg transition-all duration-300 backdrop-blur-sm hover:scale-[1.02]"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
+                  {/* Cover Image */}
+                  <div className="w-12 h-12 flex-shrink-0">
+                    {track.cover_url ? (
+                      <img 
+                        src={track.cover_url} 
+                        alt={`${track.title} cover`}
+                        className="w-full h-full rounded object-cover shadow-sm"
+                        onError={(e) => {
+                          // Fallback to placeholder if image fails to load
+                          e.target.src = `https://picsum.photos/seed/${track.title}/48/48.jpg`;
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded bg-gray-600 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate text-white">{track.title}</div>
                     <div className="text-sm text-gray-300 truncate">

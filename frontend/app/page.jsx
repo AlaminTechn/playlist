@@ -8,8 +8,9 @@ import Playlist from '@/components/Playlist';
 import NowPlaying from '@/components/NowPlaying';
 import ConnectionStatus from '@/components/ConnectionStatus';
 import PlaylistHeader from '@/components/PlaylistHeader';
+import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
 
-export default function Home() {
+function HomeContent() {
   const [playlist, setPlaylist] = useState([]);
   const [currentPlayingId, setCurrentPlayingId] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
@@ -17,6 +18,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [selectedPlaylistIndex, setSelectedPlaylistIndex] = useState(0);
+  const { addNotification } = useNotifications();
 
   // Random background colors for playlist cards
   const backgroundColors = [
@@ -57,13 +59,25 @@ export default function Home() {
     const ws = getWebSocketClient();
     ws.connect();
 
-    // Handle playlist events
+    // Handle playlist events with notifications
     ws.on('track.added', (message) => {
       loadPlaylist();
+      addNotification(
+        'added',
+        'Track Added to Playlist',
+        `${message.item?.track?.title || 'Unknown track'} was added to the playlist`,
+        message.item?.track
+      );
     });
 
     ws.on('track.removed', (message) => {
       loadPlaylist();
+      addNotification(
+        'removed',
+        'Track Removed from Playlist',
+        `${message.item?.track?.title || 'Unknown track'} was removed from the playlist`,
+        message.item?.track
+      );
     });
 
     ws.on('track.moved', (message) => {
@@ -76,6 +90,24 @@ export default function Home() {
           item.id === message.item.id ? message.item : item
         )
       );
+      
+      // Add notification for vote changes
+      const voteChange = message.item.votes - (prev.find(i => i.id === message.item.id)?.votes || 0);
+      if (voteChange > 0) {
+        addNotification(
+          'upvote',
+          'Track Upvoted',
+          `${message.item.track.title} received ${voteChange} upvote${voteChange > 1 ? 's' : ''}`,
+          message.item.track
+        );
+      } else if (voteChange < 0) {
+        addNotification(
+          'downvote',
+          'Track Downvoted',
+          `${message.item.track.title} received ${Math.abs(voteChange)} downvote${Math.abs(voteChange) > 1 ? 's' : ''}`,
+          message.item.track
+        );
+      }
     });
 
     ws.on('track.playing', (message) => {
@@ -138,7 +170,13 @@ export default function Home() {
       <div className="min-h-0 flex flex-wrap xl:flex-nowrap w-full px-4 py-4 gap-4 relative z-10">
         {/* Track Library (32%) */}
         <div className="h-full min-h-0 bg-gray-800/60 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden transform transition-all duration-300 hover:scale-[1.01] flex flex-col w-full xl:basis-[32%]">
-          <TrackLibrary playlistTracks={playlist} onAddTrack={loadPlaylist} />
+          <TrackLibrary 
+            playlistTracks={playlist} 
+            onAddTrack={() => {
+              loadPlaylist();
+              // Notification is handled by WebSocket event
+            }} 
+          />
         </div>
 
         {/* Playlist (52%) - With random background */}
@@ -231,5 +269,13 @@ export default function Home() {
         />
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <NotificationProvider>
+      <HomeContent />
+    </NotificationProvider>
   );
 }

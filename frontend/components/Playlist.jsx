@@ -126,8 +126,9 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
       </div>
 
       <div className="px-4 pt-3 text-xs uppercase tracking-wide text-gray-400">
-        <div className="grid grid-cols-[56px_minmax(0,4fr)_minmax(0,3fr)_120px_80px] gap-3 px-2">
+        <div className="grid grid-cols-[56px_48px_minmax(0,3fr)_minmax(0,2fr)_120px_80px] gap-3 px-2">
           <div>#</div>
+          <div></div>
           <div>Title</div>
           <div>Album</div>
           <div>Added</div>
@@ -159,7 +160,7 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            className={`grid grid-cols-[56px_minmax(0,4fr)_minmax(0,3fr)_120px_80px] gap-3 items-center px-3 py-2 rounded-md transition-all duration-200 hover:bg-gray-700/40 ${
+                            className={`grid grid-cols-[56px_48px_minmax(0,3fr)_minmax(0,2fr)_120px_80px] gap-3 items-center px-3 py-2 rounded-md transition-all duration-200 hover:bg-gray-700/40 ${
                               isPlaying ? 'bg-primary-900/20' : 'bg-transparent'
                             } ${snapshot.isDragging ? 'opacity-70 scale-[1.01]' : ''}`}
                             id={`playlist-row-${item.id}`}
@@ -183,6 +184,27 @@ export default function Playlist({ playlist, onUpdate, currentPlayingId }) {
                                 )}
                               </button>
                               <div {...provided.dragHandleProps} className="text-gray-400 hover:text-primary-400 cursor-grab select-none w-5 text-right">{index + 1}</div>
+                            </div>
+
+                            {/* Cover Image */}
+                            <div className="w-12 h-12 flex-shrink-0">
+                              {item.track.cover_url ? (
+                                <img 
+                                  src={item.track.cover_url} 
+                                  alt={`${item.track.title} cover`}
+                                  className="w-full h-full rounded object-cover shadow-sm"
+                                  onError={(e) => {
+                                    // Fallback to placeholder if image fails to load
+                                    e.target.src = `https://picsum.photos/seed/${item.track.title}/48/48.jpg`;
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-full h-full rounded bg-gray-700 flex items-center justify-center">
+                                  <svg className="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                                  </svg>
+                                </div>
+                              )}
                             </div>
 
                             {/* Title + artist */}
