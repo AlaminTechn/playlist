@@ -57,7 +57,7 @@ docker compose up
 - ✅ Backend health check
 - ✅ Frontend waits for backend to be ready
 
-**Note:** On subsequent runs, the database persists via volume mount, so migrations and seeding are skipped if data already exists.
+**Note:** On subsequent runs, database persists via volume mount, so migrations and seeding are skipped if data already exists.
 
 ### Option 2: Manual Setup
 
@@ -158,7 +158,7 @@ npm test
 
 ### API Tests (supertest)
 
-This repo includes API endpoint tests using `supertest` that exercise CRUD and playing/vote flows against the in-memory Express app:
+This repo includes API endpoint tests using `supertest` that exercise CRUD and playing/vote flows against an in-memory Express app:
 
 ```bash
 cd backend
@@ -209,13 +209,13 @@ Tests cover:
 
 ### Tracks
 - `GET /api/tracks` - Get all tracks in library
-- `GET /api/tracks/:id` - Get specific track
+- `GET /api/tracks/:id` - Get a specific track
 
 ### Playlist
 - `GET /api/playlist` - Get current playlist (ordered by position)
 - `POST /api/playlist` - Add track to playlist
 - `PATCH /api/playlist/:id` - Update playlist item (position, is_playing)
-- `POST /api/playlist/:id/vote` - Vote on track (up/down)
+- `POST /api/playlist/:id/vote` - Vote on a track (up/down)
 - `DELETE /api/playlist/:id` - Remove track from playlist
 
 ### WebSocket Events
@@ -262,7 +262,7 @@ function calculatePosition(prevPosition, nextPosition) {
 - **Track**: Library of available tracks (title, artist, album, duration, genre, cover_url)
 - **PlaylistTrack**: Playlist entries with position, votes, added_by, is_playing
 
-Unique constraint on `trackId` prevents duplicate tracks in playlist.
+Unique constraint on `trackId` prevents duplicate tracks in the playlist.
 
 ## Environment Variables
 
@@ -309,7 +309,7 @@ To test real-time synchronization:
 1. Open the application in multiple browser windows/tabs
 2. Perform actions in one window (add, remove, reorder, vote)
 3. Observe changes appear in other windows within ~1 second
-4. Test connection recovery by temporarily disconnecting network
+4. Test connection recovery by temporarily disconnecting the network
 
 ## Performance Considerations
 
@@ -320,7 +320,7 @@ To test real-time synchronization:
 
 ## Known Limitations
 
-1. **No User Authentication**: All users are anonymous or identified by simple username
+1. **No User Authentication**: All users are anonymous or identified by a simple username
 2. **No Audio Playback**: Simulated playback only (progress bars and timers)
 3. **No Persistence of Playback State**: Playback state resets on refresh
 4. **Single Playlist**: Only one shared playlist (no multiple playlists)
@@ -330,13 +330,12 @@ To test real-time synchronization:
 1. **User Authentication**: JWT-based auth with user profiles and avatars
 2. **Multiple Playlists**: Create, share, and manage multiple playlists
 3. **Playback History**: Track recently played songs
-4. **Auto-sort by Votes**: Optional playlist sorting based on vote counts
-5. **Keyboard Shortcuts**: Space for play/pause, arrow keys for navigation
-6. **Spotify Integration**: Import tracks from Spotify API
-7. **Export Playlist**: Export to JSON, CSV, or Spotify playlist
-8. **Mobile Responsive**: Full mobile optimization
-9. **Undo/Redo**: Action history with undo/redo functionality
-10. **Track Preview**: Hover to preview track (if audio files available)
+4. **Keyboard Shortcuts**: Space for play/pause, arrow keys for navigation
+5. **Spotify Integration**: Import tracks from Spotify API
+6. **Export Playlist**: Export to JSON, CSV, or Spotify playlist
+7. **Mobile Responsive**: Full mobile optimization
+8. **Undo/Redo**: Action history with undo/redo functionality
+9. **Track Preview**: Hover to preview track (if audio files available)
 
 ## Demo
 
@@ -377,4 +376,3 @@ Built as a take-home assignment showcasing full-stack development skills.
 ```
 Alamin Sarker.
 Email: alamin.sarker4241@gmail.com
-```
