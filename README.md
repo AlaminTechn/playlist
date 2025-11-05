@@ -341,11 +341,11 @@ To test real-time synchronization:
 
 ### Video Demo
 
-**Complete Demo Walkthrough**: [https://youtu.be/8xRwBAj1tJU](https://youtu.be/8xRwBAj1tJU)
+**Complete Demo Walkthrough**: [https://youtu.be/uXNhyirAVqg](https://youtu.be/uXNhyirAVqg)
 
 [![Playlist Demo Video](frontend/public/screenshots/image.png)](/screenshots/Playlist_Demo_Video.webm)
 
-**Complete Demo Walkthrough with Vote Sorting**: [https://youtu.be/8xRwBAj1tJU](https://youtu.be/8xRwBAj1tJU)
+**Complete Demo Walkthrough with Vote Sorting**: [https://youtu.be/uXNhyirAVqg](https://youtu.be/uXNhyirAVqg)
 
 The videos are also served by the app at:
 - `/screenshots/Playlist_Demo_Video.webm` - Complete demo walkthrough with vote sorting feature
